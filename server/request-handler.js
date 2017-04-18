@@ -11,6 +11,7 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
+var request = require('request');
 
 var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -27,6 +28,7 @@ var requestHandler = function(request, response) {
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
+  // request.url = 'http://parse.hrr.hackreactor.com/chatterbox/classes/messages';
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
   // The outgoing status.
@@ -43,7 +45,32 @@ var requestHandler = function(request, response) {
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
-  response.writeHead(statusCode, headers);
+
+
+  // handle GET requests
+
+  var options = {
+    hostname: '127.0.0.1',
+    port: 3000,
+    path: '/classes/messages/'
+  };
+
+  request.on('data', function(res) {
+
+  }).on('end', function() {
+    console.log('handle GET FSDF SDrequest!');
+    response.writeHead(statusCode, headers);
+    response.end('Hello World!!!!!!');
+  });
+
+// request.on('data', function(chunk) {
+//   body.push(chunk);
+// }).on('end', function() {
+//   body = Buffer.concat(body).toString();
+//   // at this point, `body` has the entire request body stored in it as a string
+// });
+
+
 
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to
@@ -52,7 +79,8 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end('Hello, World!');
+
+
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
@@ -70,4 +98,6 @@ var defaultCorsHeaders = {
   'access-control-allow-headers': 'content-type, accept',
   'access-control-max-age': 10 // Seconds.
 };
+
+module.exports = requestHandler;
 
