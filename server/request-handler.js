@@ -56,12 +56,6 @@ var requestHandler = function(request, response) {
     path: '/classes/messages/'
   };
 
-
-  // if request url does not match our request route
-    // reponse.statusCode = 404
-    // reponse.end() 2
-
-  // if the url is equal to one of our routes --- we have only one route :/classes/messages
   if (request.url === '/classes/messages') {
 
     if (request.method === 'POST') {
@@ -80,6 +74,7 @@ var requestHandler = function(request, response) {
       });
       request.on('end', function() {
         response.writeHead(statusCode, headers);
+        response.statusMessage = 'Welcome to our server!';
         response.end(JSON.stringify({
           results: body
         }));
@@ -89,10 +84,6 @@ var requestHandler = function(request, response) {
     response.statusCode = 404;
     response.end();
   }
-
-    // send get/post reuqests
-    // NO: return 404
-
 
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to

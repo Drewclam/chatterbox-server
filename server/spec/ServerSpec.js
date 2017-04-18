@@ -116,4 +116,56 @@ describe('Node Server Request Listener Function', function() {
       });
   });
 
+  it('Should have a response message', function() {
+    var req = new stubs.request('/classes/messages', 'GET');
+    var res = new stubs.response();
+
+    handler(req, res);
+
+    expect(res.statusMessage).to.equal('Welcome to our server!');
+  });
+
+  it('Should respond with the amount of messages that are currently stored', function() {
+    var res = new stubs.response();
+    var stubMsg0 = {
+      username: 'Jono',
+      message: 'Do my bidding!'
+    };
+    var stubMsg1 = {
+      username: 'Jono',
+      message: 'Do my bidding!'
+    };
+    var stubMsg2 = {
+      username: 'Jono',
+      message: 'Do my bidding!'
+    };
+    var stubMsg3 = {
+      username: 'Jono',
+      message: 'Do my bidding!'
+    };
+    var reqPost = new stubs.request('/classes/messages', 'POST', stubMsg0);
+    handler(reqPost, res);
+    var reqPost = new stubs.request('/classes/messages', 'POST', stubMsg1);
+    handler(reqPost, res);
+    var reqPost = new stubs.request('/classes/messages', 'POST', stubMsg2);
+    handler(reqPost, res);
+    var reqPost = new stubs.request('/classes/messages', 'POST', stubMsg3);
+    handler(reqPost, res);
+
+    var reqGet = new stubs.request('/classes/messages', 'GET');
+
+    handler(reqGet, res);
+
+    var messages = JSON.parse(res._data).results;
+    expect(messages.length).to.be.equal(6);
+  });
+
+  it('Should check for the max age in CORS header', function() {
+    var req = new stubs.request('/classes/messages', 'GET');
+    var res = new stubs.response();
+
+    handler(req, res);
+    expect(res._headers['access-control-max-age']).to.equal(10);
+  });
+
 });
