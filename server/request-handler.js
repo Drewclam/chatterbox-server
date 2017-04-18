@@ -12,8 +12,13 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 var request = require('request');
+// var concat = require('concat-stream');
+
+var body = [];
+var converter;
 
 var requestHandler = function(request, response) {
+  var stream = '';
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -45,31 +50,48 @@ var requestHandler = function(request, response) {
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
-
-
-  // handle GET requests
-
   var options = {
     hostname: '127.0.0.1',
     port: 3000,
     path: '/classes/messages/'
   };
 
-  request.on('data', function(res) {
 
-  }).on('end', function() {
-    console.log('handle GET FSDF SDrequest!');
-    response.writeHead(statusCode, headers);
-    response.end('Hello World!!!!!!');
-  });
+  // if request url does not match our request route
+    // reponse.statusCode = 404
+    // reponse.end() 2
 
-// request.on('data', function(chunk) {
-//   body.push(chunk);
-// }).on('end', function() {
-//   body = Buffer.concat(body).toString();
-//   // at this point, `body` has the entire request body stored in it as a string
-// });
+  // if the url is equal to one of our routes --- we have only one route :/classes/messages
+  if (request.url === '/classes/messages') {
 
+    if (request.method === 'POST') {
+      request.on('data', function(chunk) {
+        stream += chunk;
+      });
+      request.on('end', function() {
+        body.push(JSON.parse(stream));
+        response.writeHead(201, headers);
+        response.end();
+      });
+    }
+    if (request.method === 'GET') {
+      request.on('data', function(chunk) {
+        // body.push(chunk)
+      });
+      request.on('end', function() {
+        response.writeHead(statusCode, headers);
+        response.end(JSON.stringify({
+          results: body
+        }));
+      });
+    }
+  } else {
+    response.statusCode = 404;
+    response.end();
+  }
+
+    // send get/post reuqests
+    // NO: return 404
 
 
   // Make sure to always call response.end() - Node may not send
@@ -100,4 +122,6 @@ var defaultCorsHeaders = {
 };
 
 module.exports = requestHandler;
+
+
 
