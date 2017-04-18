@@ -59,13 +59,9 @@ describe('server', function() {
       // Now if we request the log, that message we posted should be there:
       request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
         var messages = JSON.parse(body).results;
-        // console.log(body)
-        // console.log('messages at 0', messages[0].username);
         expect(messages[0].username).to.equal('Jono');
-        // expect(messages[0].message).to.equal('Do my bidding!');
         done();
       });
-      // done();
     });
   });
 
@@ -76,5 +72,49 @@ describe('server', function() {
     });
   });
 
+  // ADD OUR OWN SPEC TESTS
+  it('Should have a response status message', function(done) {
+    request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+      expect(response.statusMessage).to.equal('Welcome to our server!');
+      done();
+    });
+  });
 
+  it('Should respond with the amount of messages that are currently stored', function(done) {
+    var requestParams = {method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Jono',
+        message: 'Do my bidding!'
+      }
+    };
+
+    request(requestParams, function(error, response, body) {
+      // done();
+    });
+
+    request(requestParams, function(error, response, body) {
+      // done();
+    });
+
+    request(requestParams, function(error, response, body) {
+      // done();
+    });
+
+    request(requestParams, function(error, response, body) {
+      request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+        var messages = JSON.parse(body).results;
+        expect(messages.length).to.equal(6);
+        done();
+      });
+    });
+  });
+
+  it('Should check for the max age in CORS header', function(done) {
+    request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+      var res = response.headers['access-control-max-age'];
+      expect(res).to.equal('10');
+      done();
+    });
+  });
 });

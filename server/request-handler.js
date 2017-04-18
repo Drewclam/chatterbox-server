@@ -16,6 +16,12 @@ var request = require('request');
 
 var body = [];
 var converter;
+var defaultCorsHeaders = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'access-control-allow-headers': 'content-type, accept',
+  'access-control-max-age': 10 // Seconds.
+};
 
 var requestHandler = function(request, response) {
   var stream = '';
@@ -70,11 +76,10 @@ var requestHandler = function(request, response) {
     }
     if (request.method === 'GET') {
       request.on('data', function(chunk) {
-        // body.push(chunk)
       });
       request.on('end', function() {
-        response.writeHead(statusCode, headers);
         response.statusMessage = 'Welcome to our server!';
+        response.writeHead(statusCode, headers, response.statusMessage);
         response.end(JSON.stringify({
           results: body
         }));
@@ -105,12 +110,7 @@ var requestHandler = function(request, response) {
 //
 // Another way to get around this restriction is to serve you chat
 // client from this domain by setting up static file serving.
-var defaultCorsHeaders = {
-  'access-control-allow-origin': '*',
-  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'access-control-allow-headers': 'content-type, accept',
-  'access-control-max-age': 10 // Seconds.
-};
+
 
 module.exports = requestHandler;
 
